@@ -45,8 +45,9 @@ const findLessOrEqual = (haystack, needle) => {
 }
 
 const errPos = err => {
-  const lineIndex = findLessOrEqual(err.file.lineMap, err.start);
-  return `Line: ${lineIndex + 1}, Col: ${err.start - err.file.lineMap[lineIndex] + 1}`;
+  const lineMap = err.file.text.split('\n');
+  const lineIndex = findLessOrEqual(lineMap, err.start);
+  return `Line: ${lineIndex + 1}, Col: ${err.start - lineMap[lineIndex] + 1}`;
 };
 
 const toMeaningfulMessage = err => `Error ${err.code}: ${err.messageText} (${errPos(err)})`;
@@ -83,7 +84,7 @@ class TypeScriptCompiler {
       delete this.options.ignoreErrors;
     }
   }
-  
+
   compile(params) {
     if (this.isIgnored(params.path)) {
       return Promise.resolve(params);
